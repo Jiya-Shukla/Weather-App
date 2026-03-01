@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="weather-card">
+      <div class="header">
+        <h2 class="title">Weather App</h2>
+        <button id="toggleMode" class="toggle-btn">
+            <span class="icon">🌙</span>
+        </button>
+    </div>
+
+    <div class="search">
+        <input type="text" id="cityInput" placeholder="Enter city" spellcheck="false">
+        <button>
+            <img src="images/search.png" alt="search">
+        </button>
+    </div>
+
+    <div class ="error">
+        <p>Invalid City Name</p>
+    </div>
+
+    <div class="weather">
+        <img src="images/rain.png" class="weather-icon">
+        <h1 class="temp">22°C</h1>
+        <h2 class="city">New York</h2>
+        <div class="details">
+            <div class="col">
+                <img src="images/humidity.png">
+                <div>
+                    <p class="humidity">50%</p>
+                    <p>Humidity</p>
+                </div> 
+            </div>
+            <div class="col">
+                <img src="images/wind.png">
+                <div>
+                    <p class="wind">15 km/h</p>
+                    <p>Wind Speed</p>
+                </div> 
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+
+   const apiUrl = "http://localhost:5000/weather?city=";
+
+    const searchBox = document.querySelector(".search input");
+    const searchBtn = document.querySelector(".search button");
+    const weatherIcon = document.querySelector(".weather-icon");
+
+    async function checkWeather(city){
+        const response = await fetch(apiUrl + city );
+
+        if(response.status == 404){
+            document.querySelector(".error").style.display = "block";
+            document.querySelector(".weather").style.display = "none";
+            return;
+        }
+
+        const data = await response.json();
+
+        document.querySelector(".city").innerHTML = data.name;
+        document.querySelector(".temp").innerHTML = Math.round(data.main.temp) + "°C";
+        document.querySelector(".humidity").innerHTML = data.main.humidity + "%";
+        document.querySelector(".wind").innerHTML = data.wind.speed + " km/h";
+
+        // Get current hour (0-23)
+        const currentHour = new Date().getHours();
+        
+        // Determine if it's day or night
+        const isNight = currentHour < 6 || currentHour >= 18;  // Before 6 AM or after 6 PM
+        
+        // Get weather condition
+        const weatherCondition = data.weather[0].main;
+
+        if (weatherCondition == "Clouds") {
+            weatherIcon.src = isNight ? "images/night-clouds.png" : "images/clouds.png";
+        }
+        else if (weatherCondition == "Clear") {
+            weatherIcon.src = isNight ? "images/night-clear.png" : "images/clear.png";
+        }
+        else if (weatherCondition == "Rain") {
+            weatherIcon.src = isNight ? "images/night-rain.png" : "images/rain.png";
+        }
+        else if (weatherCondition == "Drizzle") {
+            weatherIcon.src = isNight ? "images/night-drizzle.png" : "images/drizzle.png";
+        }
+        else if (weatherCondition == "Mist") {
+            weatherIcon.src = isNight ? "images/night-mist.png" : "images/mist.png";
+        }
+        else if (weatherCondition == "Snow") {  // ✅ Added Snow Condition
+            weatherIcon.src = isNight ? "images/night-snow.png" : "images/snow.png";
+        }
+        else if (weatherCondition == "Thunderstorm") {  // ✅ Added Thunderstorm
+            weatherIcon.src = isNight ? "images/night-thunderstorm.png" : "images/thunderstorm.png";
+        }
+        else {
+            weatherIcon.src = isNight ? "images/night-clear.png" : "images/clear.png";
+        }
+        document.querySelector(".weather").style.display = "block";
+        document.querySelector(".error").style.display = "none";
+
+        }
+        
+     
+
+
+    searchBtn.addEventListener("click" , ()=>{
+        checkWeather(searchBox.value);
+    })
+  
+   const toggleBtn = document.getElementById("toggleMode");
+const icon = toggleBtn.querySelector(".icon");
+
+toggleBtn.addEventListener("click", () => {
+    document.body.classList.toggle("night");
+
+    if(document.body.classList.contains("night")){
+        icon.textContent = "☀️";
+    } else {
+        icon.textContent = "🌙";
+    }
+});
+    
+</script>
+
+</body>
+</html>
