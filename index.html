@@ -54,22 +54,22 @@
 
 <script>
 
-   const apiUrl = "http://localhost:5000/weather?city=";
+    
+    
 
     const searchBox = document.querySelector(".search input");
     const searchBtn = document.querySelector(".search button");
     const weatherIcon = document.querySelector(".weather-icon");
 
     async function checkWeather(city){
-        const response = await fetch(apiUrl + city );
+        const response = await fetch(`http://localhost:5000/weather?city=${city}`);
 
         if(response.status == 404){
             document.querySelector(".error").style.display = "block";
             document.querySelector(".weather").style.display = "none";
-            return;
-        }
+        }else{
 
-        const data = await response.json();
+        var data = await response.json();
 
         document.querySelector(".city").innerHTML = data.name;
         document.querySelector(".temp").innerHTML = Math.round(data.main.temp) + "°C";
@@ -114,7 +114,7 @@
 
         }
         
-     
+     }
 
 
     searchBtn.addEventListener("click" , ()=>{
@@ -138,3 +138,4 @@ toggleBtn.addEventListener("click", () => {
 
 </body>
 </html>
+
